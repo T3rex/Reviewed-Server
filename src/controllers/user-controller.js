@@ -29,7 +29,6 @@ async function getAllUsers(req, res) {
 }
 
 async function createUser(req, res) {
-  console.log(req.body);
   try {
     const user = await userService.createUser(req.body);
     return res.status(201).json({

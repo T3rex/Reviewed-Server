@@ -6,12 +6,11 @@ class UserRepository {
   }
 
   async create(data) {
-    console.log(data);
     try {
       const user = await this.User.create(data);
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error creating user: " + error.message);
     }
   }
 
@@ -20,7 +19,7 @@ class UserRepository {
       const user = await this.User.findById(id);
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error fetching user: " + error.message);
     }
   }
 
@@ -29,7 +28,7 @@ class UserRepository {
       const user = await this.User.findByIdAndUpdate(id, data);
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error updating user: " + error.message);
     }
   }
 
@@ -38,7 +37,7 @@ class UserRepository {
       const user = await this.User.findByIdAndDelete(id);
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error deleting user: " + error.message);
     }
   }
 
@@ -47,7 +46,7 @@ class UserRepository {
       const users = await this.User.find();
       return users;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error fetching users: " + error.message);
     }
   }
 }

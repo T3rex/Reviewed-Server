@@ -15,19 +15,48 @@ class UserService {
   }
 
   async getUser(id) {
-    return await this.userRepository.get(id);
+    try {
+      const user = await this.userRepository.get(id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error fetching user: " + error.message);
+    }
   }
 
   async getAllUsers() {
-    return await this.userRepository.getAll();
+    try {
+      const users = await this.userRepository.getAll();
+      return users;
+    } catch (error) {
+      throw new Error("Error fetching users: " + error.message);
+    }
   }
 
   async updateUser(id, data) {
-    return await this.userRepository.update(id, data);
+    try {
+      const user = await this.userRepository.update(id, data);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error updating user: " + error.message);
+    }
   }
 
   async deleteUser(id) {
-    return await this.userRepository.delete(id);
+    try {
+      const user = await this.userRepository.delete(id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error deleting user: " + error.message);
+    }
   }
 }
 
