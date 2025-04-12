@@ -18,7 +18,11 @@ const campaignSchema = new Schema(
     },
     submissionLink: { type: String, unique: true, required: true },
     reviewList: [{ type: Schema.Types.ObjectId, ref: "Review" }],
-    status: { type: String },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
   { timestamps: true }
 );
