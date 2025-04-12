@@ -4,6 +4,12 @@ const userService = new UserService();
 
 async function getUserById(req, res) {
   try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this user",
+      });
+    }
     const user = await userService.getUserById(req.params.id);
     return res.status(200).json({
       message: "User fetched successfully",
@@ -37,12 +43,21 @@ async function createUser(req, res) {
       data: user,
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 }
 
 async function updateUser(req, res) {
   try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this user",
+      });
+    }
     const user = await userService.updateUser(req.params.id, req.body);
     return res.status(200).json({
       message: "User updated successfully",
@@ -55,6 +70,12 @@ async function updateUser(req, res) {
 }
 async function deleteUser(req, res) {
   try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this user",
+      });
+    }
     const user = await userService.deleteUser(req.params.id);
     return res.status(200).json({
       message: "User deleted successfully",
@@ -68,11 +89,11 @@ async function deleteUser(req, res) {
 
 async function signIn(req, res) {
   try {
-    const token = await userService.signIn(req.body.email, req.body.password);
+    const data = await userService.signIn(req.body.email, req.body.password);
     return res.status(200).json({
       message: "User logged in successfully",
       success: true,
-      token,
+      data,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });

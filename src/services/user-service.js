@@ -87,11 +87,8 @@ class UserService {
       if (!isPasswordValid) {
         throw new Error("Invalid password");
       }
-      const token = this.createToken({ id: user._id, email: user.email });
-      return {
-        user: { id: user._id, email: user.email },
-        token,
-      };
+      const token = this.createToken({ id: user.id, email: user.email });
+      return token;
     } catch (error) {
       throw new Error("Error signing in: " + error.message);
     }
@@ -103,15 +100,6 @@ class UserService {
       return token;
     } catch (error) {
       throw new Error("Error creating token: " + error.message);
-    }
-  }
-
-  verifyToken(token) {
-    try {
-      const user = jwt.verify(token, JWT_PRIVATE_KEY);
-      return user;
-    } catch (error) {
-      throw new Error("Error verifying token: " + error.message);
     }
   }
 
