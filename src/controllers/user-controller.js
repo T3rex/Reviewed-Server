@@ -2,9 +2,9 @@ const { UserService } = require("../services/index");
 
 const userService = new UserService();
 
-async function getUser(req, res) {
+async function getUserById(req, res) {
   try {
-    const user = await userService.getUser(req.params.id);
+    const user = await userService.getUserById(req.params.id);
     return res.status(200).json({
       message: "User fetched successfully",
       success: true,
@@ -66,10 +66,24 @@ async function deleteUser(req, res) {
   }
 }
 
+async function signIn(req, res) {
+  try {
+    const token = await userService.signIn(req.body.email, req.body.password);
+    return res.status(200).json({
+      message: "User logged in successfully",
+      success: true,
+      token,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
-  getUser,
+  getUserById,
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
+  signIn,
 };

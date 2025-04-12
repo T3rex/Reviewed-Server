@@ -14,9 +14,9 @@ class UserRepository {
     }
   }
 
-  async get(id) {
+  async getUserById(id) {
     try {
-      const user = await this.User.findById(id);
+      const user = await this.User.findById(id).select("-password");
       return user;
     } catch (error) {
       throw new Error("Error fetching user: " + error.message);
@@ -25,7 +25,9 @@ class UserRepository {
 
   async update(id, data) {
     try {
-      const user = await this.User.findByIdAndUpdate(id, data);
+      const user = await this.User.findByIdAndUpdate(id, data).select(
+        "-password"
+      );
       return user;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);
@@ -43,8 +45,20 @@ class UserRepository {
 
   async getAll() {
     try {
-      const users = await this.User.find();
+      const users = await this.User.find().select("-password");
       return users;
+    } catch (error) {
+      throw new Error("Error fetching users: " + error.message);
+    }
+  }
+
+  async getUserByEmail(email) {
+    try {
+      const user = await this.User.findOne({ email });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
     } catch (error) {
       throw new Error("Error fetching users: " + error.message);
     }

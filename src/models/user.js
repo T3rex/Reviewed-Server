@@ -19,9 +19,7 @@ const userSchema = new Schema(
         "Please fill a valid email address",
       ],
     },
-    campaignList: [
-      { type: Schema.Types.ObjectId, ref: "Campaign", unique: true },
-    ],
+    campaignList: [{ type: Schema.Types.ObjectId, ref: "Campaign" }],
 
     password: { type: String, required: true },
   },

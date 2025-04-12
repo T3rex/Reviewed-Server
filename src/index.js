@@ -10,8 +10,6 @@ app.use("/api", apiRoutes);
 
 app.listen(ServerConfig.PORT, async () => {
   console.log(`Server is running on port ${ServerConfig.PORT}`);
-  Logger.info("Successfully started the server", "root", {});
-
   try {
     await connect();
     console.log("Mongo db connected successfuly");
