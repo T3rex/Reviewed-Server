@@ -5,56 +5,58 @@ class UserRepository {
     this.User = User;
   }
 
-  async create(data) {
+  async create(data, session) {
     try {
-      const user = await this.User.create(data);
+      const user = await this.User.create(data).session(session);
       return user;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
     }
   }
 
-  async getUserById(id) {
+  async getUserById(id, session) {
     try {
-      const user = await this.User.findById(id).select("-password");
+      const user = await this.User.findById(id)
+        .select("-password")
+        .session(session);
       return user;
     } catch (error) {
       throw new Error("Error fetching user: " + error.message);
     }
   }
 
-  async update(id, data) {
+  async update(id, data, session) {
     try {
-      const user = await this.User.findByIdAndUpdate(id, data).select(
-        "-password"
-      );
+      const user = await this.User.findByIdAndUpdate(id, data)
+        .select("-password")
+        .session(session);
       return user;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);
     }
   }
 
-  async delete(id) {
+  async delete(id, session) {
     try {
-      const user = await this.User.findByIdAndDelete(id);
+      const user = await this.User.findByIdAndDelete(id).session(session);
       return user;
     } catch (error) {
       throw new Error("Error deleting user: " + error.message);
     }
   }
 
-  async getAll() {
+  async getAll(session) {
     try {
-      const users = await this.User.find().select("-password");
+      const users = await this.User.find().select("-password").session(session);
       return users;
     } catch (error) {
       throw new Error("Error fetching users: " + error.message);
     }
   }
 
-  async getUserByEmail(email) {
+  async getUserByEmail(email, session) {
     try {
-      const user = await this.User.findOne({ email });
+      const user = await this.User.findOne({ email }).session(session);
       if (!user) {
         throw new Error("User not found");
       }

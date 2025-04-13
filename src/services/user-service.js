@@ -7,9 +7,9 @@ class UserService {
     this.userRepository = new UserRepository();
   }
 
-  async createUser(data) {
+  async createUser(data, session) {
     try {
-      const user = await this.userRepository.create(data);
+      const user = await this.userRepository.create(data, session);
       if (user) {
         const token = this.createToken({ id: user._id, email: user.email });
         return {
@@ -23,9 +23,9 @@ class UserService {
     }
   }
 
-  async getUserById(id) {
+  async getUserById(id, session) {
     try {
-      const user = await this.userRepository.getUserById(id);
+      const user = await this.userRepository.getUserById(id, session);
       if (!user) {
         throw new Error("User not found");
       }
@@ -35,18 +35,18 @@ class UserService {
     }
   }
 
-  async getAllUsers() {
+  async getAllUsers(session) {
     try {
-      const users = await this.userRepository.getAll();
+      const users = await this.userRepository.getAll(session);
       return users;
     } catch (error) {
       throw new Error("Error fetching users: " + error.message);
     }
   }
 
-  async updateUser(id, data) {
+  async updateUser(id, data, session) {
     try {
-      const user = await this.userRepository.update(id, data);
+      const user = await this.userRepository.update(id, data, session);
       if (!user) {
         throw new Error("User not found");
       }
@@ -56,9 +56,9 @@ class UserService {
     }
   }
 
-  async deleteUser(id) {
+  async deleteUser(id, session) {
     try {
-      const user = await this.userRepository.delete(id);
+      const user = await this.userRepository.delete(id, session);
       if (!user) {
         throw new Error("User not found");
       }
@@ -68,9 +68,9 @@ class UserService {
     }
   }
 
-  async getUserByEmail(email) {
+  async getUserByEmail(email, session) {
     try {
-      const user = await this.userRepository.getUserByEmail(email);
+      const user = await this.userRepository.getUserByEmail(email, session);
       return user;
     } catch (error) {
       throw new Error("Error fetching user by email: " + error.message);
@@ -96,7 +96,7 @@ class UserService {
 
   createToken(user) {
     try {
-      const token = jwt.sign(user, JWT_PRIVATE_KEY, { expiresIn: "1h" });
+      const token = jwt.sign(user, JWT_PRIVATE_KEY, { expiresIn: "1d" });
       return token;
     } catch (error) {
       throw new Error("Error creating token: " + error.message);
