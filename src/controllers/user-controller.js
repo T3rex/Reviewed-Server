@@ -1,6 +1,4 @@
-const { UserService } = require("../services/index");
-
-const userService = new UserService();
+const { userService } = require("../services/service-container");
 
 async function getUserById(req, res) {
   try {

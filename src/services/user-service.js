@@ -1,10 +1,9 @@
-const { UserRepository } = require("../repositories/index");
 const { JWT_PRIVATE_KEY } = require("../config/server-config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 class UserService {
-  constructor() {
-    this.userRepository = new UserRepository();
+  constructor(userRepository) {
+    this.userRepository = userRepository;
   }
 
   async createUser(data, session) {
@@ -46,7 +45,7 @@ class UserService {
 
   async updateUser(id, data, session) {
     try {
-      const user = await this.userRepository.update(id, data, session);
+      const user = await this.userRepository.updateOne(id, data, session);
       if (!user) {
         throw new Error("User not found");
       }

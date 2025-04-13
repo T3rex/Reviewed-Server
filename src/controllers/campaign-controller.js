@@ -1,6 +1,4 @@
-const { CampaignService } = require("../services/index");
-
-const campaignService = new CampaignService();
+const { campaignService } = require("../services/service-container");
 
 async function createCampaign(req, res) {
   try {

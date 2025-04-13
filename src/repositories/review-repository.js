@@ -16,6 +16,17 @@ class ReviewRepository {
     }
   }
 
+  async getAllReviews(campaignId, session) {
+    try {
+      const reviews = await this.review.find({ campaignId }).session(session);
+      return reviews;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Review Repository: " + error.message
+      );
+    }
+  }
+
   async deleteAllReviewsByCampaignId(campaignId, session) {
     try {
       const result = await this.review

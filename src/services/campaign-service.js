@@ -1,20 +1,33 @@
 const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
-const { CampaignRepository } = require("../repositories/index");
-const UserService = require("./user-service");
-const ReviewService = require("./review-service");
 
 class CampaignService {
-  constructor() {
-    this.campaignRepository = new CampaignRepository();
-    this.reviewService = new ReviewService();
-    this.userService = new UserService();
+  constructor({ campaignRepository, reviewService, userService }) {
+    this.campaignRepository = campaignRepository;
+    this.reviewService = reviewService;
+    this.userService = userService;
   }
 
-  async createCampaign(data) {
+  setReviewService(service) {
+    this.reviewService = service;
+  }
+
+  async createCampaign(data, session) {
     try {
       data.submissionLink = uuidv4();
-      const campaign = await this.campaignRepository.createCampaign(data);
+      const campaign = await this.campaignRepository.createCampaign(
+        data,
+        session
+      );
+      if (campaign) {
+        const user = await this.userService.getUserById(data.userId, session);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        let campaignList = user.campaignList;
+        campaignList.push(campaign.id);
+        await this.userService.updateUser(user.id, { campaignList }, session);
+      }
       return campaign;
     } catch (error) {
       throw new Error(
@@ -22,9 +35,12 @@ class CampaignService {
       );
     }
   }
-  async getCampaignById(id) {
+  async getCampaignById(id, session) {
     try {
-      const campaign = await this.campaignRepository.getCampaignById(id);
+      const campaign = await this.campaignRepository.getCampaignById(
+        id,
+        session
+      );
       if (!campaign) {
         throw new Error("Campaign not found");
       }
@@ -36,10 +52,11 @@ class CampaignService {
     }
   }
 
-  async getAllCampaignByUserId(userId) {
+  async getAllCampaignByUserId(userId, session) {
     try {
       const campaigns = await this.campaignRepository.getAllCampaignByUserId(
-        userId
+        userId,
+        session
       );
       return campaigns;
     } catch (error) {
@@ -49,9 +66,13 @@ class CampaignService {
     }
   }
 
-  async updateCampaign(id, data) {
+  async updateCampaign(id, data, session) {
     try {
-      const campaign = await this.campaignRepository.updateCampaign(id, data);
+      const campaign = await this.campaignRepository.updateCampaign(
+        id,
+        data,
+        session
+      );
       if (!campaign) {
         throw new Error("Campaign not found");
       }
@@ -63,9 +84,9 @@ class CampaignService {
     }
   }
 
-  async deleteCampaign(id) {
+  async deleteCampaign(id, session) {
     try {
-      await deleteCampaignTransation(id);
+      await deleteCampaignTransaction(id, session);
       return "Campaign deleted successfully";
     } catch (error) {
       throw new Error(
@@ -74,7 +95,7 @@ class CampaignService {
     }
   }
 
-  async deleteCampaignTransation(id) {
+  async deleteCampaignTransaction(id) {
     try {
       const session = await mongoose.startSession();
       await session.withTransaction(async () => {
