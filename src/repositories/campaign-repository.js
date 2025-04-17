@@ -31,7 +31,8 @@ class CampaignRepository {
     try {
       const campaign = await this.Campaign.findByIdAndUpdate(id, data, {
         new: true,
-      }).session(session);
+        session,
+      });
       return campaign;
     } catch (error) {
       throw new Error(

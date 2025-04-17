@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const { NotFoundError, ForbiddenError } = require("../../utils/errors");
+
 class ReviewService {
   constructor({ reviewRepository, campaignService }) {
     this.reviewRepository = reviewRepository;
@@ -16,18 +19,7 @@ class ReviewService {
 
   async createReview(data, session) {
     try {
-      const review = await this.reviewRepository.createReview(data, session);
-      if (!review) {
-        throw new Error("Review not created");
-      }
-      const campaignId = data.campaignId;
-      const campaign = await this.campaignService.getCampaignById(campaignId);
-      if (!campaign) {
-        throw new Error("Campaign not found");
-      }
-      let reviewList = campaign.reviewList;
-      reviewList.push(review.id);
-      await this.campaignService.updateCampaign(campaignId, { reviewList });
+      const review = await this.createReviewTransaction(data);
       return review;
     } catch (error) {
       throw new Error(
@@ -50,13 +42,10 @@ class ReviewService {
     }
   }
 
-  async deleteReview(id, session) {
+  async deleteReview(id, userId, session) {
     try {
-      const review = await this.reviewRepository.deleteReview(id, session);
-      if (!review) {
-        throw new Error("Review not found");
-      }
-      return review;
+      await this.deleteReviewTransaction(id, userId);
+      return "Review deleted successfully";
     } catch (error) {
       throw new Error(
         "Something went wrong in service layer: " + error.message
@@ -75,6 +64,77 @@ class ReviewService {
       throw new Error(
         "Something went wrong in service layer: " + error.message
       );
+    }
+  }
+
+  async createReviewTransaction(data) {
+    const session = await mongoose.startSession();
+    try {
+      const result = await session.withTransaction(async () => {
+        const review = await this.reviewRepository.createReview(data, session);
+        if (!review) {
+          throw new Error("Review not created");
+        }
+
+        const campaignId = data.campaignId;
+        const campaign = await this.campaignService.getCampaignById(
+          campaignId,
+          session
+        );
+        if (!campaign) {
+          throw new Error("Campaign not found");
+        }
+
+        let reviewList = campaign.reviewList;
+        reviewList.push(review._id);
+
+        await this.campaignService.updateCampaign(
+          campaignId,
+          { reviewList },
+          session
+        );
+
+        return review;
+      });
+
+      return result;
+    } catch (error) {
+      throw new Error("Transaction failed: " + error.message);
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async deleteReviewTransaction(id, userId) {
+    const session = await mongoose.startSession();
+    try {
+      const review = await this.reviewRepository.getReviewById(id, session);
+      if (!review) {
+        throw new NotFoundError("Review not found");
+      }
+      if (review.userId.toString() !== userId) {
+        throw new ForbiddenError("Unauthorized to delete this review");
+      }
+      const campaignId = review.campaignId;
+      const campaign = await this.campaignService.getCampaignById(
+        campaignId,
+        session
+      );
+      if (!campaign) {
+        throw new NotFoundError("Campaign not found");
+      }
+      let reviewList = campaign.reviewList;
+      reviewList = reviewList.filter((reviewId) => reviewId.toString() !== id);
+      await this.campaignService.updateCampaign(
+        campaignId,
+        { reviewList },
+        session
+      );
+      await this.reviewRepository.deleteReview(id, session);
+    } catch (error) {
+      throw new Error("Transaction failed: " + error.message);
+    } finally {
+      session.endSession();
     }
   }
 }
