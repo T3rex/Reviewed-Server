@@ -1,5 +1,21 @@
 const { userService } = require("../services/service-container");
 
+async function createUser(req, res) {
+  try {
+    const user = await userService.createUser(req.body);
+    return res.status(201).json({
+      message: "User created successfully",
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+}
+
 async function getUserById(req, res) {
   try {
     if (req.user.id !== req.params.id) {
@@ -29,22 +45,6 @@ async function getAllUsers(req, res) {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
-  }
-}
-
-async function createUser(req, res) {
-  try {
-    const user = await userService.createUser(req.body);
-    return res.status(201).json({
-      message: "User created successfully",
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
   }
 }
 

@@ -15,20 +15,8 @@ class CampaignService {
   async createCampaign(data, session) {
     try {
       data.submissionLink = uuidv4();
-      const campaign = await this.campaignRepository.createCampaign(
-        data,
-        session
-      );
-      if (campaign) {
-        const user = await this.userService.getUserById(data.userId, session);
-        if (!user) {
-          throw new Error("User not found");
-        }
-        let campaignList = user.campaignList;
-        campaignList.push(campaign.id);
-        await this.userService.updateUser(user.id, { campaignList }, session);
-      }
-      return campaign;
+      await this.createCampaignTransaction(data);
+      return "Campaign created successfully";
     } catch (error) {
       throw new Error(
         "Something went wrong in Service layer: " + error.message
@@ -86,7 +74,7 @@ class CampaignService {
 
   async deleteCampaign(id, session) {
     try {
-      await deleteCampaignTransaction(id, session);
+      await this.deleteCampaignTransaction(id, session);
       return "Campaign deleted successfully";
     } catch (error) {
       throw new Error(
@@ -95,9 +83,37 @@ class CampaignService {
     }
   }
 
-  async deleteCampaignTransaction(id) {
+  async createCampaignTransaction(data) {
+    const session = await mongoose.startSession();
     try {
-      const session = await mongoose.startSession();
+      await session.withTransaction(async () => {
+        const campaign = await this.campaignRepository.createCampaign(
+          data,
+          session
+        );
+        if (!campaign) {
+          throw new Error("Campaign not created");
+        }
+
+        const user = await this.userService.getUserById(data.userId, session);
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        let campaignList = user.campaignList;
+        campaignList.push(campaign.id);
+        await this.userService.updateUser(user.id, { campaignList }, session);
+      });
+    } catch (error) {
+      throw new Error("Transaction failed: " + error.message);
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async deleteCampaignTransaction(id) {
+    const session = await mongoose.startSession();
+    try {
       await session.withTransaction(async () => {
         const campaign = await this.campaignRepository.getCampaignById(
           id,
@@ -120,10 +136,9 @@ class CampaignService {
           (campId) => campId.toString() !== id
         );
         await this.userService.updateUser(user.id, { campaignList }, session);
-        await this.campaignRepository.deleteCampaign(id, session);
+        await this.campaignRepository.deleteCampaign(campaign._id, session);
       });
     } catch (error) {
-      console.error("Transaction failed:", error);
       throw new Error("Transaction failed: " + error.message);
     } finally {
       session.endSession();

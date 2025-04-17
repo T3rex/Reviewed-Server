@@ -7,9 +7,10 @@ class UserRepository {
 
   async create(data, session) {
     try {
-      const user = await this.User.create(data).session(session);
-      return user;
+      const user = await this.User.create([data], { session }); // use array form with session
+      return user[0];
     } catch (error) {
+      console.error("Error in repository create():", error);
       throw new Error("Error creating user: " + error.message);
     }
   }
@@ -27,9 +28,10 @@ class UserRepository {
 
   async update(id, data, session) {
     try {
-      const user = await this.User.findByIdAndUpdate(id, data)
-        .select("-password")
-        .session(session);
+      const user = await this.User.findByIdAndUpdate(id, data, {
+        new: true,
+        session,
+      }).select("-password");
       return user;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);

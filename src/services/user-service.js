@@ -45,7 +45,7 @@ class UserService {
 
   async updateUser(id, data, session) {
     try {
-      const user = await this.userRepository.updateOne(id, data, session);
+      const user = await this.userRepository.update(id, data, session);
       if (!user) {
         throw new Error("User not found");
       }

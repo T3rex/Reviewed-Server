@@ -26,8 +26,7 @@ async function deleteCampaign(req, res) {
         error: "Campaign does not exist",
       });
     }
-
-    if (req.user.id !== campaign.userId) {
+    if (req.user.id !== campaign.userId.toString()) {
       return res.status(403).json({
         success: false,
         error: "Unauthorized to delete this campaign",
@@ -57,4 +56,5 @@ async function deleteCampaign(req, res) {
 
 module.exports = {
   createCampaign,
+  deleteCampaign,
 };

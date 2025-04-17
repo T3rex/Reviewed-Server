@@ -7,21 +7,22 @@ class CampaignRepository {
 
   async createCampaign(data, session) {
     try {
-      const campaign = await this.Campaign.create(data).session(session);
-      return campaign;
+      const campaign = await this.Campaign.create([data], { session });
+      return campaign[0];
     } catch (error) {
       throw new Error(
-        "Something went wrong in repositary layer" + error.message
+        "Something went wrong in repository layer" + error.message
       );
     }
   }
   async getCampaignById(id, session) {
     try {
       const campaign = await this.Campaign.findById(id).session(session);
+
       return campaign;
     } catch (error) {
       throw new Error(
-        "Something went wrong in repositary layer" + error.message
+        "Something went wrong in repository layer" + error.message
       );
     }
   }
@@ -34,7 +35,7 @@ class CampaignRepository {
       return campaign;
     } catch (error) {
       throw new Error(
-        "Something went wrong in repositary layer" + error.message
+        "Something went wrong in repository layer" + error.message
       );
     }
   }
@@ -50,20 +51,18 @@ class CampaignRepository {
       return updatedCampaign;
     } catch (error) {
       throw new Error(
-        "Something went wrong in repositary layer" + error.message
+        "Something went wrong in repository layer" + error.message
       );
     }
   }
 
   async getAllCampaignByUserId(userId, session) {
     try {
-      const campaigns = await this.Campaign.findAll({ userId }).session(
-        session
-      );
+      const campaigns = await this.Campaign.find({ userId }).session(session);
       return campaigns;
     } catch (error) {
       throw new Error(
-        "Something went wrong in repositary layer" + error.message
+        "Something went wrong in repository layer" + error.message
       );
     }
   }
