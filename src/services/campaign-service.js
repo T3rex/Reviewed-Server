@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
+const { NotFoundError, ForbiddenError } = require("../../utils/errors");
 
 class CampaignService {
   constructor({ campaignRepository, reviewService, userService }) {
@@ -15,8 +16,8 @@ class CampaignService {
   async createCampaign(data, session) {
     try {
       data.submissionLink = uuidv4();
-      await this.createCampaignTransaction(data);
-      return "Campaign created successfully";
+      const campaign = await this.createCampaignTransaction(data);
+      return campaign;
     } catch (error) {
       throw new Error(
         "Something went wrong in Service layer: " + error.message
@@ -72,9 +73,9 @@ class CampaignService {
     }
   }
 
-  async deleteCampaign(id, session) {
+  async deleteCampaign(id, userId, session) {
     try {
-      await this.deleteCampaignTransaction(id, session);
+      await this.deleteCampaignTransaction(id, userId, session);
       return "Campaign deleted successfully";
     } catch (error) {
       throw new Error(
@@ -86,7 +87,7 @@ class CampaignService {
   async createCampaignTransaction(data) {
     const session = await mongoose.startSession();
     try {
-      await session.withTransaction(async () => {
+      const result = await session.withTransaction(async () => {
         const campaign = await this.campaignRepository.createCampaign(
           data,
           session
@@ -103,7 +104,9 @@ class CampaignService {
         let campaignList = user.campaignList;
         campaignList.push(campaign.id);
         await this.userService.updateUser(user.id, { campaignList }, session);
+        return campaign;
       });
+      return result;
     } catch (error) {
       throw new Error("Transaction failed: " + error.message);
     } finally {
@@ -111,7 +114,7 @@ class CampaignService {
     }
   }
 
-  async deleteCampaignTransaction(id) {
+  async deleteCampaignTransaction(id, userId) {
     const session = await mongoose.startSession();
     try {
       await session.withTransaction(async () => {
@@ -120,16 +123,20 @@ class CampaignService {
           session
         );
         if (!campaign) {
-          throw new Error("Campaign not found");
+          throw new NotFoundError("Campaign not found");
         }
-
+        if (campaign.userId.toString() !== userId) {
+          throw new ForbiddenError(
+            "You are not authorized to delete this campaign"
+          );
+        }
         await this.reviewService.deleteAllReviewsByCampaignId(id, session);
         const user = await this.userService.getUserById(
           campaign.userId,
           session
         );
         if (!user) {
-          throw new Error("User not found");
+          throw new NotFoundError("User not found");
         }
         let campaignList = user.campaignList;
         campaignList = campaignList.filter(

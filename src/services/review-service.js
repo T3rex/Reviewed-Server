@@ -28,9 +28,9 @@ class ReviewService {
     }
   }
 
-  async getAllReviews(campaignId, session) {
+  async getAllReviewsByCampaignId(campaignId, session) {
     try {
-      const reviews = await this.reviewRepository.getAllReviews(
+      const reviews = await this.reviewRepository.getAllReviewsByCampaignId(
         campaignId,
         session
       );
@@ -135,6 +135,26 @@ class ReviewService {
       throw new Error("Transaction failed: " + error.message);
     } finally {
       session.endSession();
+    }
+  }
+
+  async handleClientReviewSubmission(data) {
+    try {
+      const campaign = await this.campaignService.getCampaignById(
+        data.campaignId
+      );
+      if (!campaign) {
+        throw new NotFoundError("Campaign not found");
+      }
+      const review = await this.reviewRepository.createReview(data);
+      if (!review) {
+        throw new Error("Review not created");
+      }
+      return review;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
     }
   }
 }

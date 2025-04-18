@@ -25,6 +25,10 @@ const reviewSchema = new Schema(
     imageLink: [{ type: String, unique: true }],
     reviewText: { type: String, require: true },
     rating: { type: String, required: true },
+    isApproved: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

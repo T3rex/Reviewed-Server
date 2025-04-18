@@ -16,7 +16,7 @@ class ReviewRepository {
     }
   }
 
-  async getAllReviews(campaignId, session) {
+  async getAllReviewsByCampaignId(campaignId, session) {
     try {
       const reviews = await this.review.find({ campaignId }).session(session);
       return reviews;

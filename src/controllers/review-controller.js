@@ -1,8 +1,8 @@
 const { reviewService } = require("../services/service-container");
 
-async function createReview(req, res) {
+async function submitReview(req, res) {
   try {
-    req.body.campaignId = req.params.id;
+    req.body.campaignId = req.params.campaignId;
     req.body.userId = req.user.id;
     const response = await reviewService.createReview(req.body);
     return res.status(201).json({
@@ -38,9 +38,16 @@ async function deleteReview(req, res) {
   }
 }
 
-async function getAllReviews(req, res) {
+async function getAllReviewsByCampaignId(req, res) {
   try {
-    const response = await reviewService.getAllReviews(req.params.id);
+    const campaignId = req.params.id;
+    if (!campaignId) {
+      return res.status(400).json({
+        success: false,
+        error: "Campaign ID is required",
+      });
+    }
+    const response = await reviewService.getAllReviewsByCampaignId(campaignId);
     return res.status(200).json({
       success: true,
       data: response,
@@ -55,7 +62,7 @@ async function getAllReviews(req, res) {
 }
 
 module.exports = {
-  createReview,
-  getAllReviews,
+  submitReview,
+  getAllReviewsByCampaignId,
   deleteReview,
 };
