@@ -3,8 +3,9 @@ const { JWT_PRIVATE_KEY } = require("../config/server-config");
 
 const authenticateUser = (req, res, next) => {
   try {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    //const authHeader = req.headers["authorization"];
+    // const token = authHeader && authHeader.split(" ")[1];
+    const token = req.cookies.token;
     if (!token) {
       return res
         .status(400)
@@ -14,6 +15,7 @@ const authenticateUser = (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    res.clearCookie("token");
     return res
       .status(401)
       .json({ success: false, error: "Invalid or expired token" });
