@@ -15,4 +15,12 @@ class ForbiddenError extends Error {
   }
 }
 
-module.exports = { NotFoundError, ForbiddenError };
+class InvalidAuthError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "InvalidAuthError";
+    this.statusCode = 401;
+  }
+}
+
+module.exports = { NotFoundError, ForbiddenError, InvalidAuthError };

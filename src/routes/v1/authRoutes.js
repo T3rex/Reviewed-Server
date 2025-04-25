@@ -4,13 +4,13 @@ const {
   createUser,
   signIn,
   loginStatus,
-  logout,
+  signout,
 } = require("../../controllers/user-controller");
 const { authRequestValidator } = require("../../middlewares/index");
 
 router.post("/signup", authRequestValidator, createUser);
 router.post("/signin", authRequestValidator, signIn);
 router.get("/status", loginStatus);
-router.get("/logout", logout);
+router.get("/signout", signout);
 
 module.exports = router;

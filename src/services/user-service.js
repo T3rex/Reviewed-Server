@@ -1,6 +1,7 @@
 const { JWT_PRIVATE_KEY } = require("../config/server-config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { InvalidAuthError } = require("../../utils/errors");
 class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
@@ -18,6 +19,11 @@ class UserService {
       }
       return user;
     } catch (error) {
+      if (error.code === 11000) {
+        let error = new Error("User already exists");
+        error.statusCode = 409;
+        throw error;
+      }
       throw new Error("Error creating user: " + error.message);
     }
   }
@@ -80,15 +86,27 @@ class UserService {
     try {
       const user = await this.getUserByEmail(email);
       if (!user) {
-        throw new Error("User not found");
+        throw new InvalidAuthError("User not found");
       }
       const isPasswordValid = this.checkPassword(password, user.password);
       if (!isPasswordValid) {
-        throw new Error("Invalid password");
+        throw new InvalidAuthError("Invalid password");
       }
       const token = this.createToken({ id: user.id, email: user.email });
-      return token;
+      if (!token) {
+        throw new Error("Token generation failed");
+      }
+      return {
+        user: {
+          userId: user.id,
+          name: user.name,
+        },
+        token,
+      };
     } catch (error) {
+      if (error instanceof InvalidAuthError) {
+        throw error;
+      }
       throw new Error("Error signing in: " + error.message);
     }
   }

@@ -10,6 +10,9 @@ class UserRepository {
       const user = await this.User.create([data], { session }); // use array form with session
       return user[0];
     } catch (error) {
+      if (error.code === 11000) {
+        throw error;
+      }
       console.error("Error in repository create():", error);
       throw new Error("Error creating user: " + error.message);
     }
@@ -58,7 +61,9 @@ class UserRepository {
 
   async getUserByEmail(email, session) {
     try {
-      const user = await this.User.findOne({ email }).session(session);
+      const user = await this.User.findOne({ email })
+        .select("-campaignList")
+        .session(session);
       if (!user) {
         throw new Error("User not found");
       }

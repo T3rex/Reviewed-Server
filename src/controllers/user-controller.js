@@ -1,6 +1,7 @@
 const { userService } = require("../services/service-container");
 const { JWT_PRIVATE_KEY } = require("../config/server-config");
 const jwt = require("jsonwebtoken");
+const { compareSync } = require("bcrypt");
 async function createUser(req, res) {
   try {
     const user = await userService.createUser(req.body);
@@ -17,7 +18,7 @@ async function createUser(req, res) {
       data: user,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
       error: error.message,
     });
@@ -96,13 +97,22 @@ async function deleteUser(req, res) {
 async function signIn(req, res) {
   try {
     const data = await userService.signIn(req.body.email, req.body.password);
+    res.cookie("token", data.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    // console.log(res.cookie("token"));
+
     return res.status(200).json({
       message: "User logged in successfully",
       success: true,
-      data,
+      data: {
+        user: data.user,
+      },
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(error.statusCode).json({ error: error.message });
   }
 }
 
@@ -132,7 +142,7 @@ function loginStatus(req, res) {
   }
 }
 
-function logout(req, res) {
+function signout(req, res) {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -159,5 +169,5 @@ module.exports = {
   deleteUser,
   loginStatus,
   signIn,
-  logout,
+  signout,
 };
