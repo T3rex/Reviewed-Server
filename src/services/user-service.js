@@ -92,7 +92,11 @@ class UserService {
       if (!isPasswordValid) {
         throw new InvalidAuthError("Invalid password");
       }
-      const token = this.createToken({ id: user.id, email: user.email });
+      const token = this.createToken({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      });
       if (!token) {
         throw new Error("Token generation failed");
       }
@@ -100,6 +104,7 @@ class UserService {
         user: {
           userId: user.id,
           name: user.name,
+          email: user.email,
         },
         token,
       };
@@ -108,6 +113,28 @@ class UserService {
         throw error;
       }
       throw new Error("Error signing in: " + error.message);
+    }
+  }
+
+  async signinStatus(token) {
+    try {
+      if (!token) {
+        throw new InvalidAuthError("Token not provided");
+      }
+      const decoded = jwt.verify(token, JWT_PRIVATE_KEY);
+      if (!decoded) {
+        throw new InvalidAuthError("Invalid token");
+      }
+      const user = await this.getUserById(decoded.id);
+      if (!user) {
+        throw new InvalidAuthError("User not found");
+      }
+      return { user: { id: user.id, email: user.email, name: user.name } };
+    } catch (error) {
+      if (error instanceof InvalidAuthError) {
+        throw error;
+      }
+      throw new Error("Error checking sign-in status: " + error.message);
     }
   }
 

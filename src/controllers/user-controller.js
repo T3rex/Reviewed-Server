@@ -1,7 +1,6 @@
 const { userService } = require("../services/service-container");
 const { JWT_PRIVATE_KEY } = require("../config/server-config");
 const jwt = require("jsonwebtoken");
-const { compareSync } = require("bcrypt");
 async function createUser(req, res) {
   try {
     const user = await userService.createUser(req.body);
@@ -116,7 +115,7 @@ async function signIn(req, res) {
   }
 }
 
-function loginStatus(req, res) {
+async function loginStatus(req, res) {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -125,18 +124,14 @@ function loginStatus(req, res) {
         message: "User not logged in",
       });
     }
-    const user = jwt.verify(token, JWT_PRIVATE_KEY);
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not logged in",
+    const response = await userService.signinStatus(token);
+    if (response) {
+      return res.status(200).json({
+        success: true,
+        message: "User logged in",
+        data: response,
       });
     }
-    return res.status(200).json({
-      success: true,
-      message: "User logged in",
-      data: user,
-    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
