@@ -8,6 +8,7 @@ const {
 const CampaignService = require("./campaign-service");
 const ReviewService = require("./review-service");
 const UserService = require("./user-service");
+const DashboardService = require("./dashboard-service");
 
 // Instantiate repositories
 const campaignRepository = new CampaignRepository();
@@ -36,8 +37,15 @@ campaignService = new CampaignService({
 
 reviewService.campaignService = campaignService;
 
+const dashboardService = new DashboardService({
+  campaignService,
+  reviewService,
+  userService,
+});
+
 module.exports = {
   campaignService,
   reviewService,
   userService,
+  dashboardService,
 };
