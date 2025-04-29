@@ -3,7 +3,6 @@ const { dashboardService } = require("../services/service-container");
 const getDashboardData = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("User ID:", userId);
     const response = await dashboardService.getDashboardData(userId);
     return res.status(200).json({
       success: true,

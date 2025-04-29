@@ -3,7 +3,6 @@ const { reviewService } = require("../services/service-container");
 async function submitReview(req, res) {
   try {
     req.body.campaignId = req.params.campaignId;
-    req.body.userId = req.user.id;
     const response = await reviewService.createReview(req.body);
     return res.status(201).json({
       success: true,

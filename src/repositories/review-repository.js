@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Review } = require("../models/index");
 
 class ReviewRepository {
@@ -54,6 +55,20 @@ class ReviewRepository {
     try {
       const review = await this.review.findById(id).session(session);
       return review;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Review Repository: " + error.message
+      );
+    }
+  }
+
+  async countReviewByUserId(userId, session) {
+    try {
+      const aggregate = await this.review.aggregate([
+        { $match: { userId: new mongoose.Types.ObjectId(`${userId}`) } },
+        { $count: "totalReviews" },
+      ]);
+      return aggregate;
     } catch (error) {
       throw new Error(
         "Something went wrong in Review Repository: " + error.message

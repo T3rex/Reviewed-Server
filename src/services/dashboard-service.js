@@ -7,8 +7,8 @@ class DashboardService {
 
   async getDashboardData(userId) {
     try {
-      console.log("Fetching dashboard data for user ID:", userId);
-      return "Dashboard data fetched successfully";
+      const totalReviews = await this.reviewService.countReviewByUserId(userId);
+      return totalReviews;
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       throw new Error("Failed to fetch dashboard data");

@@ -67,6 +67,17 @@ class ReviewService {
     }
   }
 
+  async countReviewByUserId(userId) {
+    try {
+      const data = await this.reviewRepository.countReviewByUserId(userId);
+      return data;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in service layer: " + error.message
+      );
+    }
+  }
+
   async createReviewTransaction(data) {
     const session = await mongoose.startSession();
     try {
