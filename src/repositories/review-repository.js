@@ -66,19 +66,46 @@ class ReviewRepository {
     try {
       const stats = await this.review.aggregate([
         {
-          $match: {
-            userId: new mongoose.Types.ObjectId(`${userId}`),
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            averageRating: { $avg: "$rating" },
-            totalReviews: { $sum: 1 },
+          $facet: {
+            totalReviews: [
+              {
+                $match: {
+                  userId: new mongoose.Types.ObjectId(`${userId}`),
+                },
+              },
+              { $count: "totalReviews" },
+            ],
+            averageRating: [
+              {
+                $match: { userId: new mongoose.Types.ObjectId(`${userId}`) },
+              },
+              {
+                $group: {
+                  _id: null,
+                  averageRating: { $avg: "$rating" },
+                },
+              },
+            ],
+            recentReviews: [
+              {
+                $match: { userId: new mongoose.Types.ObjectId(`${userId}`) },
+              },
+              { $sort: { createdAt: -1 } },
+              { $limit: 5 },
+              {
+                $project: {
+                  id: 1,
+                  imageLink: 1,
+                  rating: 1,
+                  reviewText: 1,
+                  reviewerName: 1,
+                  videoLink: 1,
+                },
+              },
+            ],
           },
         },
       ]);
-
       return stats[0];
     } catch (error) {
       throw new Error(
