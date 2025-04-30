@@ -24,7 +24,7 @@ const reviewSchema = new Schema(
     videoLink: { type: String, unique: true },
     imageLink: [{ type: String, unique: true }],
     reviewText: { type: String, require: true },
-    rating: { type: String, required: true },
+    rating: { type: Number, required: true },
     isApproved: {
       type: Boolean,
       default: true,

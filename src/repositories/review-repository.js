@@ -64,11 +64,22 @@ class ReviewRepository {
 
   async countReviewByUserId(userId, session) {
     try {
-      const aggregate = await this.review.aggregate([
-        { $match: { userId: new mongoose.Types.ObjectId(`${userId}`) } },
-        { $count: "totalReviews" },
+      const stats = await this.review.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(`${userId}`),
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            averageRating: { $avg: "$rating" },
+            totalReviews: { $sum: 1 },
+          },
+        },
       ]);
-      return aggregate;
+
+      return stats[0];
     } catch (error) {
       throw new Error(
         "Something went wrong in Review Repository: " + error.message

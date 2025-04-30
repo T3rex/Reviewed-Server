@@ -1,4 +1,5 @@
 const { Campaign } = require("../models/index");
+const mongoose = require("mongoose");
 
 class CampaignRepository {
   constructor() {
@@ -20,6 +21,48 @@ class CampaignRepository {
       const campaign = await this.Campaign.findById(id).session(session);
 
       return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
+
+  async getCampaignStatsByUserId(userId, session) {
+    try {
+      const stats = await this.Campaign.aggregate([
+        {
+          $facet: {
+            totalCampaigns: [
+              { $match: { userId: new mongoose.Types.ObjectId(`${userId}`) } },
+              { $count: "totalCampaigns" },
+            ],
+            activeCampaigns: [
+              {
+                $match: {
+                  userId: new mongoose.Types.ObjectId(`${userId}`),
+                  status: "active",
+                },
+              },
+              { $count: "activeCampaigns" },
+            ],
+            recentCampaigns: [
+              { $match: { userId: new mongoose.Types.ObjectId(`${userId}`) } },
+              { $sort: { createdAt: -1 } },
+              { $limit: 5 },
+              {
+                $project: {
+                  id: 1,
+                  title: 1,
+                  description: 1,
+                  status: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+      return stats[0];
     } catch (error) {
       throw new Error(
         "Something went wrong in repository layer" + error.message

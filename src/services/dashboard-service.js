@@ -7,8 +7,18 @@ class DashboardService {
 
   async getDashboardData(userId) {
     try {
-      const totalReviews = await this.reviewService.countReviewByUserId(userId);
-      return totalReviews;
+      const reviewStats = await this.reviewService.countReviewByUserId(userId);
+      const campaignStats = await this.campaignService.getCampaignStatsByUserId(
+        userId
+      );
+
+      return {
+        totalReviews: reviewStats.totalReviews,
+        averageRating: reviewStats.averageRating,
+        totalCampaigns: campaignStats.totalCampaigns[0].totalCampaigns,
+        activeCampaigns: campaignStats.activeCampaigns[0].activeCampaigns,
+        recentCampaigns: campaignStats.recentCampaigns,
+      };
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       throw new Error("Failed to fetch dashboard data");

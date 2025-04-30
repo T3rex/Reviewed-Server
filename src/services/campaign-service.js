@@ -41,13 +41,25 @@ class CampaignService {
     }
   }
 
-  async getAllCampaignByUserId(userId, session) {
+  async getCampaignStatsByUserId(userId, session) {
     try {
-      const campaigns = await this.campaignRepository.getAllCampaignByUserId(
+      const stats = await this.campaignRepository.getCampaignStatsByUserId(
         userId,
         session
       );
-      return campaigns;
+      return stats;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
+    }
+  }
+
+  async getActiveCampaignsCount(userId, session) {
+    try {
+      const activeCampaignsCount =
+        await this.campaignRepository.getActiveCampaignsCount(userId, session);
+      return activeCampaignsCount;
     } catch (error) {
       throw new Error(
         "Something went wrong in Service layer: " + error.message
