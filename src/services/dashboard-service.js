@@ -13,8 +13,8 @@ class DashboardService {
       );
 
       return {
-        totalReviews: reviewStats.totalReviews,
-        averageRating: reviewStats.averageRating,
+        totalReviews: reviewStats.totalReviews[0].totalReviews,
+        averageRating: reviewStats.averageRating[0].averageRating,
         recentReviews: reviewStats.recentReviews,
         totalCampaigns: campaignStats.totalCampaigns[0].totalCampaigns,
         activeCampaigns: campaignStats.activeCampaigns[0].activeCampaigns,
