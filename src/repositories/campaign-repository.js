@@ -53,7 +53,7 @@ class CampaignRepository {
               {
                 $project: {
                   id: 1,
-                  title: 1,
+                  campaignName: 1,
                   description: 1,
                   status: 1,
                 },
