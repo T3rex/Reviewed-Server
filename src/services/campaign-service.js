@@ -67,6 +67,21 @@ class CampaignService {
     }
   }
 
+  async checkCampaignNameAvailable(campaignName, userId, session) {
+    try {
+      const campaignExists = await this.campaignRepository.checkCampaignExists(
+        campaignName,
+        userId,
+        session
+      );
+      return campaignExists ? false : true;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
+    }
+  }
+
   async updateCampaign(id, data, session) {
     try {
       const campaign = await this.campaignRepository.updateCampaign(

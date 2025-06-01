@@ -20,12 +20,11 @@ const campaignSchema = new Schema(
     },
     collectionType: {
       type: String,
-      enum: ["Text Only", "Video Only", "Text and Video"],
+      enum: ["Text only", "Video only", "Text and Video"],
       default: "Text Only",
     },
     customMessage: {
       type: String,
-      required: true,
     },
     questions: [
       {

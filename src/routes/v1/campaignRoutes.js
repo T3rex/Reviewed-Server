@@ -3,6 +3,7 @@ const { authenticateUser } = require("../../middlewares/index");
 const {
   createCampaign,
   deleteCampaign,
+  checkCampaignNameAvailable,
 } = require("../../controllers/campaign-controller");
 const {
   deleteReview,
@@ -14,5 +15,10 @@ router.post("/", authenticateUser, createCampaign);
 router.delete("/:campaignId", authenticateUser, deleteCampaign);
 router.delete("/:campaignId/:reviewId", authenticateUser, deleteReview);
 router.get("/:campaignId/review", authenticateUser, getAllReviewsByCampaignId);
+router.post(
+  "/check-availability",
+  authenticateUser,
+  checkCampaignNameAvailable
+);
 
 module.exports = router;

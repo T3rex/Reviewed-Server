@@ -110,6 +110,20 @@ class CampaignRepository {
       );
     }
   }
+
+  async checkCampaignExists(campaignName, userId, session) {
+    try {
+      const campaign = await this.Campaign.findOne({
+        campaignName,
+        userId,
+      }).session(session);
+      return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
 }
 
 module.exports = CampaignRepository;

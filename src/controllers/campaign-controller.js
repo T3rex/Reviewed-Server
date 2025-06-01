@@ -16,6 +16,28 @@ async function createCampaign(req, res) {
     });
   }
 }
+async function checkCampaignNameAvailable(req, res) {
+  try {
+    const { campaignName } = req.body;
+    const userId = req.user.id;
+    const isAvailable = await campaignService.checkCampaignNameAvailable(
+      campaignName,
+      userId
+    );
+    return res.status(200).json({
+      success: true,
+      isAvailable: isAvailable,
+      message: isAvailable
+        ? "Campaign name is available"
+        : "Campaign name is already taken",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: "Failed to check campaign name availability: " + error.message,
+    });
+  }
+}
 
 async function deleteCampaign(req, res) {
   try {
@@ -38,4 +60,5 @@ async function deleteCampaign(req, res) {
 module.exports = {
   createCampaign,
   deleteCampaign,
+  checkCampaignNameAvailable,
 };
