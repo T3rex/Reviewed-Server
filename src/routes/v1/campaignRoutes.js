@@ -4,6 +4,7 @@ const {
   createCampaign,
   deleteCampaign,
   checkCampaignNameAvailable,
+  getCampaignSubmissionLink,
 } = require("../../controllers/campaign-controller");
 const {
   deleteReview,
@@ -20,5 +21,6 @@ router.post(
   authenticateUser,
   checkCampaignNameAvailable
 );
+router.get("/submission-link", authenticateUser, getCampaignSubmissionLink);
 
 module.exports = router;

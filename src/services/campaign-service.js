@@ -15,7 +15,8 @@ class CampaignService {
 
   async createCampaign(data, session) {
     try {
-      data.submissionLink = uuidv4();
+      data.submissionLink =
+        data.campaignName + "/" + uuidv4().split("-").join("");
       const campaign = await this.createCampaignTransaction(data);
       return campaign;
     } catch (error) {
@@ -75,6 +76,22 @@ class CampaignService {
         session
       );
       return campaignExists ? false : true;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
+    }
+  }
+
+  async getCampaignSubmissionLink(userId, campaignName, session) {
+    try {
+      const submissionLink =
+        await this.campaignRepository.getCampaignSubmissionLink(
+          campaignName,
+          userId,
+          session
+        );
+      return submissionLink;
     } catch (error) {
       throw new Error(
         "Something went wrong in Service layer: " + error.message

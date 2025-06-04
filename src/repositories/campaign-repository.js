@@ -70,6 +70,31 @@ class CampaignRepository {
     }
   }
 
+  async getAllCampaignByUserId(userId, session) {
+    try {
+      const campaigns = await this.Campaign.find({ userId }).session(session);
+      return campaigns;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
+
+  async getCampaignSubmissionLink(userId, campaignName, session) {
+    try {
+      const submissionLink = await this.Campaign.findOne({
+        userId,
+        campaignName,
+      }).session(session);
+      return submissionLink;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
+
   async updateCampaign(id, data, session) {
     try {
       const campaign = await this.Campaign.findByIdAndUpdate(id, data, {
@@ -93,17 +118,6 @@ class CampaignRepository {
         session
       );
       return updatedCampaign;
-    } catch (error) {
-      throw new Error(
-        "Something went wrong in repository layer" + error.message
-      );
-    }
-  }
-
-  async getAllCampaignByUserId(userId, session) {
-    try {
-      const campaigns = await this.Campaign.find({ userId }).session(session);
-      return campaigns;
     } catch (error) {
       throw new Error(
         "Something went wrong in repository layer" + error.message
