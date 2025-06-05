@@ -70,12 +70,12 @@ class CampaignService {
 
   async checkCampaignNameAvailable(campaignName, userId, session) {
     try {
-      const campaignExists = await this.campaignRepository.checkCampaignExists(
+      const campaignId = await this.campaignRepository.checkCampaignExists(
         campaignName,
         userId,
         session
       );
-      return campaignExists ? false : true;
+      return campaignId;
     } catch (error) {
       throw new Error(
         "Something went wrong in Service layer: " + error.message
@@ -83,12 +83,11 @@ class CampaignService {
     }
   }
 
-  async getCampaignSubmissionLink(userId, campaignName, session) {
+  async getCampaignSubmissionLink(campaignId, session) {
     try {
       const submissionLink =
         await this.campaignRepository.getCampaignSubmissionLink(
-          campaignName,
-          userId,
+          campaignId,
           session
         );
       return submissionLink;

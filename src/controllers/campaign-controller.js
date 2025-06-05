@@ -17,18 +17,63 @@ async function createCampaign(req, res) {
     });
   }
 }
+async function getCampaignById(req, res) {
+  try {
+    const { campaignId } = req.params;
+    const campaign = await campaignService.getCampaignById(campaignId);
+    if (!campaign) {
+      return res.status(404).json({
+        success: false,
+        error: "Campaign not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: campaign,
+      message: "Campaign retrieved successfully",
+    });
+  } catch (error) {}
+}
+async function updateCampaign(req, res) {
+  try {
+    const { campaignId } = req.params;
+    const data = req.body;
+    const updatedCampaign = await campaignService.updateCampaign(
+      campaignId,
+      data
+    );
+    if (!updatedCampaign) {
+      return res.status(404).json({
+        success: false,
+        error: "Campaign not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: updatedCampaign,
+      submissionLink: updatedCampaign.submissionLink,
+      message: "Campaign updated successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: "Failed to update campaign: " + error.message,
+    });
+  }
+}
+
 async function checkCampaignNameAvailable(req, res) {
   try {
     const { campaignName } = req.body;
     const userId = req.user.id;
-    const isAvailable = await campaignService.checkCampaignNameAvailable(
+    const campaignId = await campaignService.checkCampaignNameAvailable(
       campaignName,
       userId
     );
     return res.status(200).json({
       success: true,
-      isAvailable: isAvailable,
-      message: isAvailable
+      campaignId: campaignId || null,
+      message: campaignId
         ? "Campaign name is available"
         : "Campaign name is already taken",
     });
@@ -41,11 +86,9 @@ async function checkCampaignNameAvailable(req, res) {
 }
 async function getCampaignSubmissionLink(req, res) {
   try {
-    const { campaignName } = req.body;
-    const userId = req.user.id;
+    const { campaignId } = req.params;
     const submissionLink = await campaignService.getCampaignSubmissionLink(
-      userId,
-      campaignName
+      campaignId
     );
     if (!submissionLink) {
       return res.status(404).json({
@@ -88,4 +131,6 @@ module.exports = {
   deleteCampaign,
   checkCampaignNameAvailable,
   getCampaignSubmissionLink,
+  getCampaignById,
+  updateCampaign,
 };

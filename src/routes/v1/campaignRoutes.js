@@ -5,6 +5,8 @@ const {
   deleteCampaign,
   checkCampaignNameAvailable,
   getCampaignSubmissionLink,
+  getCampaignById,
+  updateCampaign,
 } = require("../../controllers/campaign-controller");
 const {
   deleteReview,
@@ -12,7 +14,9 @@ const {
 } = require("../../controllers/review-controller");
 const router = express.Router();
 
+router.get("/:campaignId", authenticateUser, getCampaignById);
 router.post("/", authenticateUser, createCampaign);
+router.put("/:campaignId", authenticateUser, updateCampaign); // Reusing createCampaign for update
 router.delete("/:campaignId", authenticateUser, deleteCampaign);
 router.delete("/:campaignId/:reviewId", authenticateUser, deleteReview);
 router.get("/:campaignId/review", authenticateUser, getAllReviewsByCampaignId);
@@ -21,6 +25,10 @@ router.post(
   authenticateUser,
   checkCampaignNameAvailable
 );
-router.get("/submission-link", authenticateUser, getCampaignSubmissionLink);
+router.get(
+  "/submission-link/:campaignId",
+  authenticateUser,
+  getCampaignSubmissionLink
+);
 
 module.exports = router;
