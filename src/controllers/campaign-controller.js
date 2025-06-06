@@ -17,6 +17,38 @@ async function createCampaign(req, res) {
     });
   }
 }
+
+async function createDuplicateCampaign(req, res) {
+  try {
+    const { campaignId, campaignName } = req.body;
+    console.log(
+      "Creating duplicate campaign with ID:",
+      campaignId,
+      campaignName
+    );
+    const duplicateCampaign = await campaignService.createDuplicateCampaign(
+      campaignId,
+      campaignName
+    );
+    if (!duplicateCampaign) {
+      return res.status(400).json({
+        success: false,
+        error: "Duplicate Campaign not created",
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      data: duplicateCampaign,
+      submissionLink: duplicateCampaign.submissionLink,
+      message: "Duplicate Campaign created successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: "Failed to create duplicate campaign: " + error.message,
+    });
+  }
+}
 async function getCampaignById(req, res) {
   try {
     const { campaignId } = req.params;
@@ -133,4 +165,5 @@ module.exports = {
   getCampaignSubmissionLink,
   getCampaignById,
   updateCampaign,
+  createDuplicateCampaign,
 };

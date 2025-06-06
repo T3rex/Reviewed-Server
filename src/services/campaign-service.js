@@ -25,6 +25,47 @@ class CampaignService {
       );
     }
   }
+
+  async createDuplicateCampaign(campaignId, newCampaignName, session) {
+    try {
+      const originalCampaign = await this.campaignRepository.getCampaignById(
+        campaignId,
+        session
+      );
+
+      console.log("Original campaign found:", originalCampaign);
+      if (!originalCampaign) {
+        throw new Error("Original campaign not found");
+      }
+
+      if (newCampaignName === originalCampaign.campaignName) {
+        throw new Error("Campaign name must be different from the original");
+      }
+
+      const plainCampaign = originalCampaign.toObject();
+
+      delete plainCampaign._id;
+      delete plainCampaign.__v;
+      delete plainCampaign.createdAt;
+      delete plainCampaign.updatedAt;
+
+      plainCampaign.campaignName = newCampaignName;
+
+      const duplicateCampaign = await this.createCampaign(
+        plainCampaign,
+        session
+      );
+      console.log("Duplicate campaign created:", duplicateCampaign);
+      if (!duplicateCampaign) {
+        throw new Error("Failed to create duplicate campaign");
+      }
+
+      return duplicateCampaign;
+    } catch (error) {
+      throw new Error("Service Error (duplicate): " + error.message);
+    }
+  }
+
   async getCampaignById(id, session) {
     try {
       const campaign = await this.campaignRepository.getCampaignById(
