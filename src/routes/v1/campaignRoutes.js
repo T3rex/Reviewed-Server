@@ -20,7 +20,7 @@ router.post("/", authenticateUser, createCampaign);
 router.post("/duplicate", authenticateUser, createDuplicateCampaign);
 router.put("/:campaignId", authenticateUser, updateCampaign);
 router.delete("/:campaignId", authenticateUser, deleteCampaign);
-router.delete("/:campaignId/:reviewId", authenticateUser, deleteReview);
+// router.delete("/:campaignId/:reviewId", authenticateUser, deleteReview);
 router.get("/:campaignId/review", authenticateUser, getAllReviewsByCampaignId);
 router.post(
   "/check-availability",

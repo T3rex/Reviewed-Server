@@ -28,7 +28,14 @@ const campaignSchema = new Schema(
     },
     questions: [
       {
-        type: String,
+        id: {
+          type: Number,
+          required: true,
+        },
+        question: {
+          type: String,
+          required: true,
+        },
       },
     ],
     extraInfo: {

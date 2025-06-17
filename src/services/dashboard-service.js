@@ -13,12 +13,12 @@ class DashboardService {
       );
 
       return {
-        totalReviews: reviewStats.totalReviews[0].totalReviews,
-        averageRating: reviewStats.averageRating[0].averageRating,
-        recentReviews: reviewStats.recentReviews,
-        totalCampaigns: campaignStats.totalCampaigns[0].totalCampaigns,
-        activeCampaigns: campaignStats.activeCampaigns[0].activeCampaigns,
-        recentCampaigns: campaignStats.recentCampaigns,
+        totalReviews: reviewStats?.totalReviews[0]?.totalReviews,
+        averageRating: reviewStats?.averageRating[0]?.averageRating,
+        recentReviews: reviewStats?.recentReviews,
+        totalCampaigns: campaignStats?.totalCampaigns[0]?.totalCampaigns,
+        activeCampaigns: campaignStats?.activeCampaigns[0]?.activeCampaigns,
+        recentCampaigns: campaignStats?.recentCampaigns,
       };
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

@@ -142,9 +142,9 @@ async function getCampaignSubmissionLink(req, res) {
 }
 async function deleteCampaign(req, res) {
   try {
-    const response = await campaignService.deleteCampaign(
-      req.params.campaignId
-    );
+    const userId = req.user.id;
+    const campaignId = req.params.campaignId;
+    const response = await campaignService.deleteCampaign(campaignId, userId);
     return res.status(200).json({
       success: true,
       data: response,
