@@ -15,8 +15,6 @@ class CampaignService {
 
   async createCampaign(data, session) {
     try {
-      data.submissionLink =
-        data.campaignName + "/" + uuidv4().split("-").join("");
       const campaign = await this.createCampaignTransaction(data);
       return campaign;
     } catch (error) {
@@ -33,7 +31,6 @@ class CampaignService {
         session
       );
 
-      console.log("Original campaign found:", originalCampaign);
       if (!originalCampaign) {
         throw new Error("Original campaign not found");
       }
@@ -48,6 +45,8 @@ class CampaignService {
       delete plainCampaign.__v;
       delete plainCampaign.createdAt;
       delete plainCampaign.updatedAt;
+      delete plainCampaign.submissionLink;
+      delete plainCampaign.campaignNameLower;
 
       plainCampaign.campaignName = newCampaignName;
 
@@ -55,7 +54,6 @@ class CampaignService {
         plainCampaign,
         session
       );
-      console.log("Duplicate campaign created:", duplicateCampaign);
       if (!duplicateCampaign) {
         throw new Error("Failed to create duplicate campaign");
       }
@@ -70,6 +68,24 @@ class CampaignService {
     try {
       const campaign = await this.campaignRepository.getCampaignById(
         id,
+        session
+      );
+      if (!campaign) {
+        throw new Error("Campaign not found");
+      }
+      return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
+    }
+  }
+
+  async getCampaignByUserByName(name, userId, session) {
+    try {
+      const campaign = await this.campaignRepository.getCampaignById(
+        name,
+        userId,
         session
       );
       if (!campaign) {

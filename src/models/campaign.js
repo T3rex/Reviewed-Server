@@ -13,7 +13,9 @@ const campaignSchema = new Schema(
       type: String,
       required: true,
     },
-
+    campaignNameLower: {
+      type: String,
+    },
     collectStars: {
       type: Boolean,
       required: true,
@@ -85,7 +87,7 @@ const campaignSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    submissionLink: { type: String, unique: true, required: true },
+    submissionLink: { type: String, unique: true },
     reviewList: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     status: {
       type: String,
@@ -95,6 +97,19 @@ const campaignSchema = new Schema(
   },
   { timestamps: true }
 );
+
+campaignSchema.pre("save", function (next) {
+  if (!this.submissionLink) {
+    this.submissionLink =
+      this.campaignName.split(" ").join("-").toLowerCase() + "/" + Date.now();
+  }
+  next();
+});
+
+campaignSchema.pre("save", function (next) {
+  this.campaignNameLower = this.campaignName.toLowerCase();
+  next();
+});
 
 const Campaign = mongoose.model("Campaign", campaignSchema);
 

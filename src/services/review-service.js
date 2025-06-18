@@ -87,9 +87,11 @@ class ReviewService {
           throw new Error("Review not created");
         }
 
-        const campaignId = data.campaignId;
-        const campaign = await this.campaignService.getCampaignById(
-          campaignId,
+        const campaignName = data.campaignName;
+        const userId = data.user.id;
+        const campaign = await this.campaignService.getCampaignByUserByName(
+          campaignName,
+          userId,
           session
         );
         if (!campaign) {
@@ -100,7 +102,7 @@ class ReviewService {
         reviewList.push(review._id);
 
         await this.campaignService.updateCampaign(
-          campaignId,
+          campaign.id,
           { reviewList },
           session
         );

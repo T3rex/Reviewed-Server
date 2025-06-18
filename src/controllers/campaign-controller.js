@@ -21,11 +21,7 @@ async function createCampaign(req, res) {
 async function createDuplicateCampaign(req, res) {
   try {
     const { campaignId, campaignName } = req.body;
-    console.log(
-      "Creating duplicate campaign with ID:",
-      campaignId,
-      campaignName
-    );
+
     const duplicateCampaign = await campaignService.createDuplicateCampaign(
       campaignId,
       campaignName
@@ -103,7 +99,6 @@ async function checkCampaignNameAvailable(req, res) {
       userId
     );
     return res.status(200).json({
-      success: true,
       campaignId: campaignId || null,
       message: campaignId
         ? "Campaign name is available"
@@ -111,7 +106,6 @@ async function checkCampaignNameAvailable(req, res) {
     });
   } catch (error) {
     return res.status(400).json({
-      success: false,
       error: "Failed to check campaign name availability: " + error.message,
     });
   }

@@ -8,8 +8,9 @@ class CampaignRepository {
 
   async createCampaign(data, session) {
     try {
-      const campaign = await this.Campaign.create([data], { session });
-      return campaign[0];
+      const campaign = new this.Campaign(data);
+      await campaign.save({ session });
+      return campaign;
     } catch (error) {
       throw new Error(
         "Something went wrong in repository layer" + error.message
@@ -19,6 +20,20 @@ class CampaignRepository {
   async getCampaignById(id, session) {
     try {
       const campaign = await this.Campaign.findById(id).session(session);
+      return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
+
+  async getCampaignByUserByName(campaignName, userId, session) {
+    try {
+      const campaign = await this.Campaign.find({
+        user: userId,
+        campaignName: campaignName,
+      }).session(session);
       return campaign;
     } catch (error) {
       throw new Error(
@@ -80,6 +95,8 @@ class CampaignRepository {
     }
   }
 
+  async;
+
   async getCampaignSubmissionLink(campaignId, session) {
     try {
       const campaign = await this.Campaign.findOne({ _id: campaignId })
@@ -127,7 +144,7 @@ class CampaignRepository {
   async checkCampaignExists(campaignName, userId, session) {
     try {
       const campaign = await this.Campaign.findOne({
-        campaignName,
+        campaignNameLower: campaignName.toLowerCase(),
         userId,
       })
         .select("_id")
