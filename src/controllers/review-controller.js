@@ -3,14 +3,13 @@ const { reviewService } = require("../services/service-container");
 async function submitReview(req, res) {
   try {
     req.body.campaignName = req.params.campaignName;
-    console.log(req.params.campaignName);
-    // req.body.user = req.user;
-    // const response = await reviewService.createReview(req.body);
-    // return res.status(201).json({
-    //   success: true,
-    //   data: response,
-    //   message: "Review created successfully",
-    // });
+    req.body.campaignId = req.params.campaignId;
+    const response = await reviewService.createReview(req.body);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message,
+    });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
       success: false,

@@ -101,7 +101,10 @@ const campaignSchema = new Schema(
 campaignSchema.pre("save", function (next) {
   if (!this.submissionLink) {
     this.submissionLink =
-      this.campaignName.split(" ").join("-").toLowerCase() + "/" + Date.now();
+      "/submit/" +
+      this.campaignName.split(" ").join("-").toLowerCase() +
+      "/" +
+      this._id;
   }
   next();
 });
