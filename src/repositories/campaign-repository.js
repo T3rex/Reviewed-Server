@@ -28,6 +28,21 @@ class CampaignRepository {
     }
   }
 
+  async getPublicCampaignById(id, session) {
+    try {
+      const campaign = await Campaign.findById(id)
+        .select(
+          "headerTitle customMessage campaignLogo questions collectStars collectionType extraInfo -_id"
+        )
+        .session(session);
+      return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in repository layer" + error.message
+      );
+    }
+  }
+
   async getCampaignByUserByName(campaignName, userId, session) {
     try {
       const campaign = await this.Campaign.find({

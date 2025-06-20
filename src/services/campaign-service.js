@@ -81,6 +81,23 @@ class CampaignService {
     }
   }
 
+  async getPublicCampaignById(id, session) {
+    try {
+      const campaign = await this.campaignRepository.getPublicCampaignById(
+        id,
+        session
+      );
+      if (!campaign) {
+        throw new Error("Campaign not found");
+      }
+      return campaign;
+    } catch (error) {
+      throw new Error(
+        "Something went wrong in Service layer: " + error.message
+      );
+    }
+  }
+
   async getCampaignByUserByName(name, userId, session) {
     try {
       const campaign = await this.campaignRepository.getCampaignById(

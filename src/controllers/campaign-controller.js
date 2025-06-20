@@ -62,6 +62,25 @@ async function getCampaignById(req, res) {
     });
   } catch (error) {}
 }
+
+async function getPublicCampaignById(req, res) {
+  try {
+    const { campaignId } = req.params;
+    const campaign = await campaignService.getPublicCampaignById(campaignId);
+    if (!campaign) {
+      return res.status(404).json({
+        success: false,
+        error: "Campaign not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: campaign,
+      message: "Campaign retrieved successfully",
+    });
+  } catch (error) {}
+}
+
 async function updateCampaign(req, res) {
   try {
     const { campaignId } = req.params;
@@ -160,4 +179,5 @@ module.exports = {
   getCampaignById,
   updateCampaign,
   createDuplicateCampaign,
+  getPublicCampaignById,
 };

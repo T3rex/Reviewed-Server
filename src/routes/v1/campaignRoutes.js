@@ -8,6 +8,7 @@ const {
   getCampaignById,
   updateCampaign,
   createDuplicateCampaign,
+  getPublicCampaignById,
 } = require("../../controllers/campaign-controller");
 const {
   deleteReview,
@@ -16,6 +17,7 @@ const {
 const router = express.Router();
 
 router.get("/:campaignId", authenticateUser, getCampaignById);
+router.get("/public/:campaignId", getPublicCampaignById);
 router.post("/", authenticateUser, createCampaign);
 router.post("/duplicate", authenticateUser, createDuplicateCampaign);
 router.put("/:campaignId", authenticateUser, updateCampaign);
