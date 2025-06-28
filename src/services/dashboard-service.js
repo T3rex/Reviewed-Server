@@ -7,11 +7,13 @@ class DashboardService {
 
   async getDashboardData(userId) {
     try {
-      const reviewStats = await this.reviewService.countReviewByUserId(userId);
+      const reviewStats = await this.reviewService.getReviewStatsByUserId(
+        userId
+      );
       const campaignStats = await this.campaignService.getCampaignStatsByUserId(
         userId
       );
-
+      console.log("Review Stats:", reviewStats);
       return {
         totalReviews: reviewStats?.totalReviews[0]?.totalReviews,
         averageRating: reviewStats?.averageRating[0]?.averageRating,

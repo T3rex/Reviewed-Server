@@ -9,7 +9,7 @@ const reviewSchema = new Schema(
       ref: "Campaign",
       required: true,
     },
-    userId: {
+    campaignOwner: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -20,12 +20,23 @@ const reviewSchema = new Schema(
     },
     reviewerEmail: {
       type: String,
+      sparse: true,
     },
-    videoLink: { type: String, unique: true },
-    imageLink: [{ type: String, unique: true }],
+    reviewerSocialLink: {
+      type: String,
+      sparse: true,
+    },
+    reviewerTitle: { type: String, sparse: true },
+    videoLink: { type: String, sparse: true },
+    imageLinks: [{ type: String, sparse: true }],
+    reviewerPhoto: { type: String, sparse: true },
     reviewText: { type: String, require: true },
     rating: { type: Number, required: true },
     isApproved: {
+      type: Boolean,
+      default: true,
+    },
+    permission: {
       type: Boolean,
       default: true,
     },

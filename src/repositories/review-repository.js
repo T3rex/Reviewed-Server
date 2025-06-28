@@ -62,22 +62,25 @@ class ReviewRepository {
     }
   }
 
-  async countReviewByUserId(userId, session) {
+  async getReviewStatsByUserId(userId, session) {
     try {
+      console.log("User ID:", userId);
       const stats = await this.review.aggregate([
         {
           $facet: {
             totalReviews: [
               {
                 $match: {
-                  userId: new mongoose.Types.ObjectId(`${userId}`),
+                  campaignOwner: new mongoose.Types.ObjectId(`${userId}`),
                 },
               },
               { $count: "totalReviews" },
             ],
             averageRating: [
               {
-                $match: { userId: new mongoose.Types.ObjectId(`${userId}`) },
+                $match: {
+                  campaignOwner: new mongoose.Types.ObjectId(`${userId}`),
+                },
               },
               {
                 $group: {
@@ -88,7 +91,9 @@ class ReviewRepository {
             ],
             recentReviews: [
               {
-                $match: { userId: new mongoose.Types.ObjectId(`${userId}`) },
+                $match: {
+                  campaignOwner: new mongoose.Types.ObjectId(`${userId}`),
+                },
               },
               { $sort: { createdAt: -1 } },
               { $limit: 5 },
@@ -106,6 +111,7 @@ class ReviewRepository {
           },
         },
       ]);
+      console.log("Stats:", stats);
       return stats[0];
     } catch (error) {
       throw new Error(

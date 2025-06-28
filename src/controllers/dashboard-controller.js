@@ -4,6 +4,7 @@ const getDashboardData = async (req, res) => {
   try {
     const userId = req.user.id;
     const response = await dashboardService.getDashboardData(userId);
+    // console.log("Dashboard data retrieved successfully:", response);
     return res.status(200).json({
       success: true,
       message: "Dashboard data retrieved successfully",

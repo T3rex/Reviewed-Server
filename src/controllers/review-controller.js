@@ -6,9 +6,10 @@ async function submitReview(req, res) {
     req.body.campaignId = req.params.campaignId;
     const response = await reviewService.createReview(req.body);
 
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      error: error.message,
+    return res.status(200).json({
+      success: true,
+      data: response,
+      message: "Review submitted successfully",
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({

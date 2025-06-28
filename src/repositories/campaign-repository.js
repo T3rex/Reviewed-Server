@@ -30,19 +30,24 @@ class CampaignRepository {
 
   async getPublicCampaignById(id, session) {
     try {
+      // Optional: Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error("Invalid campaign ID");
+      }
+
       const campaign = await Campaign.findById(id)
         .select(
-          "headerTitle customMessage campaignLogo questions collectStars collectionType extraInfo -_id"
+          "-_id -status -reviewList -userId -campaignNameLower -campaignName -submissionLink -__v -createdAt -updatedAt"
         )
         .session(session);
+
       return campaign;
     } catch (error) {
       throw new Error(
-        "Something went wrong in repository layer" + error.message
+        "Something went wrong in repository layer: " + error.message
       );
     }
   }
-
   async getCampaignByUserByName(campaignName, userId, session) {
     try {
       const campaign = await this.Campaign.find({

@@ -67,9 +67,9 @@ class ReviewService {
     }
   }
 
-  async countReviewByUserId(userId) {
+  async getReviewStatsByUserId(userId) {
     try {
-      const data = await this.reviewRepository.countReviewByUserId(userId);
+      const data = await this.reviewRepository.getReviewStatsByUserId(userId);
       return data;
     } catch (error) {
       throw new Error(
@@ -82,20 +82,21 @@ class ReviewService {
     const session = await mongoose.startSession();
     try {
       const result = await session.withTransaction(async () => {
+        const campaignId = new mongoose.Types.ObjectId(`${data.campaignId}`);
+
+        const campaign = await this.campaignService.getCampaignById(
+          campaignId,
+          session
+        );
+
+        if (!campaign) {
+          throw new Error("Campaign not found");
+        }
+        data.campaignOwner = campaign.userId;
+
         const review = await this.reviewRepository.createReview(data, session);
         if (!review) {
           throw new Error("Review not created");
-        }
-
-        const campaignName = data.campaignName;
-        const userId = data.user.id;
-        const campaign = await this.campaignService.getCampaignByUserByName(
-          campaignName,
-          userId,
-          session
-        );
-        if (!campaign) {
-          throw new Error("Campaign not found");
         }
 
         let reviewList = campaign.reviewList;
