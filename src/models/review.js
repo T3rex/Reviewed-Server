@@ -30,7 +30,7 @@ const reviewSchema = new Schema(
     videoLink: { type: String, sparse: true },
     imageLinks: [{ type: String, sparse: true }],
     reviewerPhoto: { type: String, sparse: true },
-    reviewText: { type: String, require: true },
+    reviewText: { type: String, sparse: true },
     rating: { type: Number, required: true },
     isApproved: {
       type: Boolean,
