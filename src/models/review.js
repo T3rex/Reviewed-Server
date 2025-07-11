@@ -32,6 +32,7 @@ const reviewSchema = new Schema(
     reviewerPhoto: { type: String, sparse: true },
     reviewText: { type: String, sparse: true },
     rating: { type: Number, required: true },
+    reviewType: { type: String, enum: ["text", "video"], default: "text" },
     isApproved: {
       type: Boolean,
       default: true,

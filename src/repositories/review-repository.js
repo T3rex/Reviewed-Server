@@ -17,10 +17,18 @@ class ReviewRepository {
     }
   }
 
-  async getAllReviewsByCampaignId(campaignId, session) {
+  async getAllReviewsByCampaignId(campaignId, page = 0, limit = 10, session) {
     try {
-      const reviews = await this.review.find({ campaignId }).session(session);
-      return reviews;
+      const total = await this.review.countDocuments({ campaignId });
+      const hasMore = total > (page + 1) * limit;
+      const reviews = await this.review
+        .find({ campaignId })
+        .sort({ createdAt: -1 })
+        .skip(page * limit)
+        .limit(limit)
+        .session(session);
+
+      return { reviews, hasMore };
     } catch (error) {
       throw new Error(
         "Something went wrong in Review Repository: " + error.message
@@ -64,7 +72,6 @@ class ReviewRepository {
 
   async getReviewStatsByUserId(userId, session) {
     try {
-      console.log("User ID:", userId);
       const stats = await this.review.aggregate([
         {
           $facet: {
@@ -111,7 +118,6 @@ class ReviewRepository {
           },
         },
       ]);
-      console.log("Stats:", stats);
       return stats[0];
     } catch (error) {
       throw new Error(

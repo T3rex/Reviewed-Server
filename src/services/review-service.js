@@ -28,13 +28,15 @@ class ReviewService {
     }
   }
 
-  async getAllReviewsByCampaignId(campaignId, session) {
+  async getAllReviewsByCampaignId(campaignId, page, limit, session) {
     try {
-      const reviews = await this.reviewRepository.getAllReviewsByCampaignId(
+      const response = await this.reviewRepository.getAllReviewsByCampaignId(
         campaignId,
+        page,
+        limit,
         session
       );
-      return reviews;
+      return response;
     } catch (error) {
       throw new Error(
         "Something went wrong in service layer: " + error.message

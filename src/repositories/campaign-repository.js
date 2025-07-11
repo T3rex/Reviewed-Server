@@ -90,6 +90,7 @@ class CampaignRepository {
                   campaignName: 1,
                   description: 1,
                   status: 1,
+                  campaignLogo: 1,
                 },
               },
             ],

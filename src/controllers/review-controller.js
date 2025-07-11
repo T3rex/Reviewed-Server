@@ -41,14 +41,19 @@ async function deleteReview(req, res) {
 
 async function getAllReviewsByCampaignId(req, res) {
   try {
-    const campaignId = req.params.id;
+    const { campaignId } = req.params;
+    const { page = 0, limit = 20 } = req.query;
     if (!campaignId) {
       return res.status(400).json({
         success: false,
         error: "Campaign ID is required",
       });
     }
-    const response = await reviewService.getAllReviewsByCampaignId(campaignId);
+    const response = await reviewService.getAllReviewsByCampaignId(
+      campaignId,
+      page,
+      limit
+    );
     return res.status(200).json({
       success: true,
       data: response,
